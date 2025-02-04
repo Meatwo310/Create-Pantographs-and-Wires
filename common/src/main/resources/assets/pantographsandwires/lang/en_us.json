@@ -27,6 +27,7 @@
     "block.pantographsandwires.power_line_bracket": "Power Line Bracket",
 
     "item.pantographsandwires.cantilever": "Cantilever",
+    "item.pantographsandwires.cantilever_incomplete": "Incomplete Cantilever",
     "item.pantographsandwires.catenary_wire": "Catenary Wire",
     "item.pantographsandwires.power_wire": "Power Wire",
     "item.pantographsandwires.wire.connection_not_loaded": "One of the connectors is not loaded.",

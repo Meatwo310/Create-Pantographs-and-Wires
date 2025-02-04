@@ -27,6 +27,7 @@
     "block.pantographsandwires.power_line_bracket": "Bahnstromleitungshalterung",
 
     "item.pantographsandwires.cantilever": "Ausleger",
+    "item.pantographsandwires.cantilever_incomplete": "Unvollständiger Ausleger",
     "item.pantographsandwires.catenary_wire": "Kettenfahrleitung",
     "item.pantographsandwires.power_wire": "Bahnenergieleitung",
     "item.pantographsandwires.wire.connection_not_loaded": "Einer der Verbindungspunkte ist nicht geladen.",
