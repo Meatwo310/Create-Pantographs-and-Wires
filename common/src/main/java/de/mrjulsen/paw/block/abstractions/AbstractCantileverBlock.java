@@ -124,7 +124,7 @@ public abstract class AbstractCantileverBlock extends AbstractRotatableWireConne
     public static final EnumProperty<ECantileverInsulatorsPlacement> INSULATORS_PLACEMENT = EnumProperty.create("insulator_placement", ECantileverInsulatorsPlacement.class);
 
     public AbstractCantileverBlock(Properties properties) {
-        super(Properties.of().mapColor(MapColor.METAL)
+        super(properties.mapColor(MapColor.METAL)
             .noOcclusion()
         );
 
