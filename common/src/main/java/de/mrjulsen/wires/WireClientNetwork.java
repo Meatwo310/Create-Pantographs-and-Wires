@@ -1,11 +1,6 @@
 package de.mrjulsen.wires;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.Multimap;
@@ -34,6 +29,8 @@ public final class WireClientNetwork implements IWireNetwork {
     private final Multimap<ChunkPos, WireCollision> collisionByChunk = MultimapBuilder.hashKeys().hashSetValues().build();
     private final Multimap<SectionPos, WireCollision> collisionBySection = MultimapBuilder.hashKeys().hashSetValues().build();
     private final Multimap<BlockPos, WireCollision> collisionByBlock = MultimapBuilder.hashKeys().hashSetValues().build();
+    // ★追加：UUIDからWireCollisionを引けるようにMapを追加する
+    private final Map<UUID, WireCollision> collisionById = new HashMap<>();
     
     private final Multimap<UUID, WireSegmentRenderDataBatch> renderDataById = MultimapBuilder.hashKeys().hashSetValues().build();
     private final Multimap<ChunkPos, WireSegmentRenderDataBatch> renderDataByChunk = MultimapBuilder.hashKeys().hashSetValues().build();
@@ -106,6 +103,21 @@ public final class WireClientNetwork implements IWireNetwork {
         return renderDataBySection.get(section);
     }
 
+    private void removeCollisionFromMaps(WireCollision collision) {
+        if (collision == null) {
+            return;
+        }
+        for (ChunkPos pos : collision.chunksIn()) {
+            collisionByChunk.remove(pos, collision);
+        }
+        for (SectionPos pos : collision.sectionsIn()) {
+            collisionBySection.remove(pos, collision);
+        }
+        for (BlockPos pos : collision.blocksIn()) {
+            collisionByBlock.remove(pos, collision);
+        }
+    }
+
     public void createClientConnection(@Nullable ChunkPos chunk, WireSyncDataEntry in) {
         if (in.forceUpdate()) {
             removeClientConnection(in.data().getConnectionId());
@@ -129,7 +141,8 @@ public final class WireClientNetwork implements IWireNetwork {
             sectionsIn.add(x.getKey());
         });
 
-        new WireCollision(collisionByChunk, collisionBySection, collisionByBlock, in.data().getConnectionId(), in.data().getStartBlockPos(), batch.getCollisions());
+        WireCollision collision = new WireCollision(collisionByChunk, collisionBySection, collisionByBlock, in.data().getConnectionId(), in.data().getStartBlockPos(), batch.getCollisions());
+        this.collisionById.put(in.data().getConnectionId(), collision);
 
         for (SectionPos section : sectionsIn) {
             setSectionDirty(section);
@@ -150,9 +163,9 @@ public final class WireClientNetwork implements IWireNetwork {
         Collection<WireSegmentRenderDataBatch> renderdata = renderDataById.removeAll(connectionId);
         renderDataBySection.values().removeAll(renderdata);
         renderDataByChunk.values().removeAll(renderdata);
-        collisionByBlock.values().removeIf(x -> x.getId().equals(connectionId));
-        collisionByChunk.values().removeIf(x -> x.getId().equals(connectionId));
-        collisionBySection.values().removeIf(x -> x.getId().equals(connectionId));
+
+        WireCollision collision = this.collisionById.remove(connectionId);
+        removeCollisionFromMaps(collision);
         
         for (WireSegmentRenderDataBatch batch : renderdata) {
             SectionPos section = batch.getSection();

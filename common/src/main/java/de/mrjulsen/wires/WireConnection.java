@@ -100,6 +100,9 @@ public class WireConnection {
             }
         }
         if (!hasChanged) return false;
+
+        network.removeCollisionFromMaps(this.getCollisionData());
+
         WireConnectionSyncData sync = WireConnectionSyncData.of(this);
         WireCollision collision = new WireCollision(chunkMap, sectionMap, blockMap, this.getId(), getPointA(), getWireType().buildWire(WireCreationContext.COLLISION, network.level(), sync).getCollisions());
         setCollisionData(collision);

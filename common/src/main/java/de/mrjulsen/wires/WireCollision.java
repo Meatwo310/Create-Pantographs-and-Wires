@@ -34,10 +34,6 @@ public class WireCollision {
     private final Set<SectionPos> sections = new HashSet<>();
 
     public WireCollision(Multimap<ChunkPos, WireCollision> chunkMap, Multimap<SectionPos, WireCollision> sectionMap, Multimap<BlockPos, WireCollision> blockMap, UUID connectionId, BlockPos origin, Set<WirePoints> points) {
-        chunkMap.values().removeIf(x -> x.getId().equals(connectionId));
-        sectionMap.values().removeIf(x -> x.getId().equals(connectionId));
-        blockMap.values().removeIf(x -> x.getId().equals(connectionId));
-
         this.connectionId = connectionId;
         for (WirePoints p : points) {
             Vector3f[] vec = p.vertices();
@@ -154,6 +150,10 @@ public class WireCollision {
             sb.append(c.toString());
         }
         return sb.toString();
+    }
+
+    public Set<ChunkPos> chunksIn() {
+        return chunks;
     }
 
     public static class WireBlockCollision {

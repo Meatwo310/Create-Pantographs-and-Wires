@@ -285,15 +285,31 @@ public final class WireNetwork extends SavedData implements IWireNetwork {
         setDirty();
     }
 
+    void removeCollisionFromMaps(WireCollision collision) {
+        if (collision == null) {
+            return;
+        }
+        for (ChunkPos pos : collision.chunksIn()) {
+            collisionByChunk.remove(pos, collision);
+        }
+        for (SectionPos pos : collision.sectionsIn()) {
+            collisionBySection.remove(pos, collision);
+        }
+        for (BlockPos pos : collision.blocksIn()) {
+            collisionByBlock.remove(pos, collision);
+        }
+    }
+
+
     private synchronized Set<UUID> removeWireConnection(UUID connection) {
         return removeWireConnection(connectionsById.get(connection));
     }
 
     private synchronized Set<UUID> removeWireConnection(WireConnection connection) {
         Set<UUID> updatePlayers = new HashSet<>();
-        collisionByBlock.values().removeIf(x -> x.getId().equals(connection.getId()));
-        collisionByChunk.values().removeIf(x -> x.getId().equals(connection.getId()));
-        collisionBySection.values().removeIf(x -> x.getId().equals(connection.getId()));
+
+        removeCollisionFromMaps(connection.getCollisionData());
+
         connectionsByBlock.values().removeIf(x -> x == connection);
         connectionsBySection.values().removeIf(x -> x == connection);
         connectionsByHash.values().removeIf(x -> x == connection);
